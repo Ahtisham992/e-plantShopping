@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ProductList.css'
 import CartItem from './CartItem';
+import { addItem } from './CartSlice';
 function ProductList({ onHomeClick }) {
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
@@ -233,10 +234,22 @@ function ProductList({ onHomeClick }) {
         textDecoration: 'none',
     }
 
+    const [addedToCart, setAddedToCart] = useState({});
+
     const handleHomeClick = (e) => {
         e.preventDefault();
         onHomeClick();
     };
+
+    const handleAddtoCart = (product) => {
+        dispatch(addItem(product)); // Dispatch the action to add the product to the cart (Redux action)
+        setAddedToCart((prevState) => ({ // Update the local state to reflect that the product has been added
+            ...prevState, // Spread the previous state to retain existing entries
+            [product.name]: true, // Set the current product's name as a key with value 'true' to mark it as added
+        }));
+
+
+    }
 
     const handleCartClick = (e) => {
         e.preventDefault();
@@ -274,15 +287,17 @@ function ProductList({ onHomeClick }) {
             </div>
             {!showCart ? (
                 <div className="product-grid">
-                    {plantsArray.map((category,index)=>{
+                    {plantsArray.map((category, index) => {
                         <div key={index}>
                             <h1>{category}</h1>
-                            {category.plants.map((plant,index)=>{
-                                <div>
+                            {category.plants.map((plant, pindex) => {
+                                <div key={pindex}>
                                     <img src={plant.image}></img>
                                     <h2>{plant.name}</h2>
                                     <p>{plant.description}</p>
+                                    <button onClick={() => handleAddToCart(plant)}>Add to cart</button>
                                 </div>
+
                             })}
                         </div>
                     })}
